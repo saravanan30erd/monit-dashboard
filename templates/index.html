@@ -1,21 +1,23 @@
 $def with (output, now)
 
 <!-- Functions -->
-$def row_error(check):
+$def row_error(check, env):
+  $ env = env.replace(" ", "")
   <tr>
     <td><a href="$output[server]['url']/$env-$check"
       target="_blank" style="text-decoration:none;">$check</a></td>
     <td><img src="static/img/error.png"></td>
   </tr>
 
-$def row_ok(check):
+$def row_ok(check, env):
+  $ env = env.replace(" ", "")
   <tr>
     <td><a href="$output[server]['url']/$env-$check"
       target="_blank" style="text-decoration:none; color:black;">$check</a></td>
     <td><img src="static/img/ok.png"></td>
   </tr>
 
-$def table_contents(color, text, services):
+$def table_contents(color, text, services, env):
   <thead class="inner-rows">
     <tr><th class="th-custom ${color}" colspan="2">
       <a style="color: white">$text</a>
@@ -25,9 +27,9 @@ $def table_contents(color, text, services):
   $for check in services.keys():
       $ isError = services.get(check)
       $if isError != 0:
-        $:row_error(check)
+        $:row_error(check, env)
       $else:
-        $:row_ok(check)
+        $:row_ok(check, env)
   </tbody>
 
 <!-- Main Content -->
@@ -74,11 +76,12 @@ $def table_contents(color, text, services):
                 $code:
                   color = "red"
                   txt = "{}: {} error(s)".format(env, errors)
-                $:table_contents(color, txt, services)
+                $:table_contents(color, txt, services, env)
               $else:
                 $code:
                   color = "green"
-                $:table_contents(color, env, services)
+                  txt = env
+                $:table_contents(color, txt, services, env)
             </table>
             </div>
         $else:
@@ -104,10 +107,12 @@ $def table_contents(color, text, services):
                 $code:
                   color = "red"
                   txt = "{}: {} error(s)".format(env, errors)
-                $:table_contents(color, txt, services)
+                $:table_contents(color, txt, services, env)
               $else:
-                $ color = "green"
-                $:table_contents(color, env, services)
+                $code:
+                  color = "green"
+                  txt = env
+                $:table_contents(color, txt, services, env)
             </table>
             </div>
 </div>
